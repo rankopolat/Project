@@ -14,17 +14,22 @@
   background-color: #ffffff;
 }
 
-div.Ranko, div.Poh{
-   
-  text-align: center;
+div{
+   text-align: center;
     font-size: 30px;
     color: white;
     padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 500px;
-    width:30%;
+    height: 150px;
+    width:98%;
+}
+.Ranko{
    background-color:limegreen;    
     float: left;
 }
+.Poh{
+    background-color:limegreen;    
+    float: left;
+  }
