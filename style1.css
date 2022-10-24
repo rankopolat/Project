@@ -4,6 +4,8 @@ div.container{
   height: 150px;
   width:100%;
 }
+img{
+  width:100%;}
   
 .topbar{
   background-color: #bfbfbf;
