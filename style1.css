@@ -6,6 +6,8 @@
 }
 
 .container .header-content .logo{
+  
+  overflow:hidden;
   width:399px;
   height:399px;
   font-size:0;
