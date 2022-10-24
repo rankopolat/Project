@@ -1,12 +1,13 @@
 .topbar{
   background-color: #ff33cc;
   overflow: hidden;
+  text-align: center;
 }
 .topbar a {
   float: left;
-  color: #f2f2f2;
+  color: #bfbfbf;
   text-align: center;
-  padding: 30px 40px;
+  padding: 34px 16px;
   text-decoration: none;
   font-size: 17px;
 }
