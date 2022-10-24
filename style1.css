@@ -1,4 +1,15 @@
+.container .header-content{
+ position:relative;
+  margin:0 auto;
+  max-width:1055px;
+  height:100%}
 
+.container .header-content .logo img{
+  width:399px;
+  height:399px;
+  font-size:0;
+  position:relative
+}
 
 
 .topbar{
