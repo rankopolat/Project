@@ -1,9 +1,10 @@
 .imageTry{
-  background-image: url("projectFiles/clouds.png");
+   height: 150px;
+   width:98%;
 }
+
 .Logo{
   flow:left;
-   background-image: url("projectFiles/ok.png");
     width: 10px;
     height: 20px;
 }
