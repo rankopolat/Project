@@ -1,9 +1,9 @@
-.imageTry{
+.imageTry img{
  
    width:98%;
 }
 
-.Logo img{
+.imageTry.Logo img{
   flow:left;
     width: 10px;
     height: 20px;
