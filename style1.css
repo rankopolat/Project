@@ -10,6 +10,7 @@ img{
 .topbar{
   background-color: #bfbfbf;
   overflow: hidden;
+  text-align: center;
   height: 30px;
 }
 .topbar a {
