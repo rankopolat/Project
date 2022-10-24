@@ -1,12 +1,8 @@
-.imageTry img{
- 
-   width:98%;
-}
+
 
 .imageTry .Logo{
-  flow:left;
-    width: 10px;
-    height: 20px;
+ 
+    width:100px;
 }
 .topbar{
   background-color: #bfbfbf;
