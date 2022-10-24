@@ -1,14 +1,10 @@
 
-.container .header-content .logo{
-  
-  overflow:hidden;
-  width:30px;
-  height:30px;
-  font-size:0;
-  position:relative
+.container{
+  background-size: cover;
+  background-position: center;
+  height: 300px;
 }
-
-
+  
 .topbar{
   background-color: #bfbfbf;
   overflow: hidden;
