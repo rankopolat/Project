@@ -37,10 +37,10 @@ div.Ranko, div.Poh{
     height: 400px;
     width:98%;
 }
-.Ranko{
+#Ranko{
    background-color:limegreen;    
 }
-.Poh{
+#Poh{
     background-color:pink;    
   }
 h1,h2{
