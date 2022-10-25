@@ -27,7 +27,7 @@
   color: white;
 }
 
-div#Ranko, div#Poh{
+#Ranko, #Poh{
     font-size: 30px;
     color: white;
     padding: 10px;
