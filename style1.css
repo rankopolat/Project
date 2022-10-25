@@ -29,7 +29,7 @@
 
 div.Ranko, div.Poh{
     font-size: 30px;
-    color: white;
+    color: black;
     padding: 10px;
     display: flex;
     align-items: center;
@@ -37,9 +37,11 @@ div.Ranko, div.Poh{
     height: 400px;
     width:98%;
 }
+
 .Ranko{
    background-color:limegreen;    
 }
+
 .Poh{
     background-color:pink;    
   }
