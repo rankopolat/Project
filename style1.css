@@ -34,7 +34,7 @@ div.Ranko, div.Poh{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 150px;
+    height: 100%;
     width:98%;
 }
 .Ranko{
