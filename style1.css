@@ -15,7 +15,7 @@ canvas {
   display: block;
 }
 
-.container .overlay {
+#try{
   position: absolute;
   top: 80px;
   right: 15px;
