@@ -11,126 +11,273 @@
       <a href ="Ranko/year1"> Ranko</a>
       <a href ="#Poh"> Poh</a>
     </div>
-     <canvas id="canvas">
-       <h1>University Of Wollongong</h1>
-       <h2>Computer Science</h2>
-      </canvas>
+    <!-- Canvas -->
+<canvas class="orb-canvas"></canvas>
+<!-- Overlay -->
+<div class="overlay">
+  <!-- Overlay inner wrapper -->
+  <div class="overlay__inner">
+    <!-- Title -->
+    <h1 class="overlay__title">
+      Hey, would you like to learn how to create a
+      <span class="text-gradient">generative</span> UI just like this?
+    </h1>
+    <!-- Description -->
+    <p class="overlay__description">
+      In this tutorial we will be creating a generative “orb” animation
+      using pixi.js, picking some lovely random colors and pulling it all
+      together in a nice frosty UI.
+      <strong>We're gonna talk accessibility, too.</strong>
+    </p>
+    <!-- Buttons -->
+    <div class="overlay__btns">
+
+      <button class="overlay__btn overlay__btn--transparent">
+        <a href="https://georgefrancis.dev/writing/create-a-generative-landing-page-and-webgl-powered-background/" target="_blank">
+
+          View Tutorial
+        </a>
+      </button>
+
+      <button class="overlay__btn overlay__btn--colors">
+        <span>Randomise Colors</span>
+        <span class="overlay__btn-emoji">🎨</span>
+      </button>
+    </div>
+  </div>
+</div>
  
   
    
   </body>
   <script>
-    const rand = function(min, max) {
-  return Math.random() * ( max - min ) + min;
+   import * as PIXI from "https://cdn.skypack.dev/pixi.js@5.x";
+import { KawaseBlurFilter } from "https://cdn.skypack.dev/@pixi/filter-kawase-blur@3.2.0";
+import SimplexNoise from "https://cdn.skypack.dev/simplex-noise@3.0.0";
+import hsl from "https://cdn.skypack.dev/hsl-to-hex";
+import debounce from "https://cdn.skypack.dev/debounce";
+
+// return a random number within a range
+function random(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
+// map a number from 1 range to another
+function map(n, start1, end1, start2, end2) {
+  return ((n - start1) / (end1 - start1)) * (end2 - start2) + start2;
+}
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// Create a new simplex noise instance
+const simplex = new SimplexNoise();
 
-window.addEventListener('resize', function() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  ctx = canvas.getContext('2d');
-  ctx.globalCompositeOperation = 'lighter';
+// ColorPalette class
+class ColorPalette {
+  constructor() {
+    this.setColors();
+    this.setCustomProperties();
+  }
+
+  setColors() {
+    // pick a random hue somewhere between 220 and 360
+    this.hue = ~~random(220, 360);
+    this.complimentaryHue1 = this.hue + 30;
+    this.complimentaryHue2 = this.hue + 60;
+    // define a fixed saturation and lightness
+    this.saturation = 95;
+    this.lightness = 50;
+
+    // define a base color
+    this.baseColor = hsl(this.hue, this.saturation, this.lightness);
+    // define a complimentary color, 30 degress away from the base
+    this.complimentaryColor1 = hsl(
+      this.complimentaryHue1,
+      this.saturation,
+      this.lightness
+    );
+    // define a second complimentary color, 60 degrees away from the base
+    this.complimentaryColor2 = hsl(
+      this.complimentaryHue2,
+      this.saturation,
+      this.lightness
+    );
+
+    // store the color choices in an array so that a random one can be picked later
+    this.colorChoices = [
+      this.baseColor,
+      this.complimentaryColor1,
+      this.complimentaryColor2
+    ];
+  }
+
+  randomColor() {
+    // pick a random color
+    return this.colorChoices[~~random(0, this.colorChoices.length)].replace(
+      "#",
+      "0x"
+    );
+  }
+
+  setCustomProperties() {
+    // set CSS custom properties so that the colors defined here can be used throughout the UI
+    document.documentElement.style.setProperty("--hue", this.hue);
+    document.documentElement.style.setProperty(
+      "--hue-complimentary1",
+      this.complimentaryHue1
+    );
+    document.documentElement.style.setProperty(
+      "--hue-complimentary2",
+      this.complimentaryHue2
+    );
+  }
+}
+
+// Orb class
+class Orb {
+  // Pixi takes hex colors as hexidecimal literals (0x rather than a string with '#')
+  constructor(fill = 0x000000) {
+    // bounds = the area an orb is "allowed" to move within
+    this.bounds = this.setBounds();
+    // initialise the orb's { x, y } values to a random point within it's bounds
+    this.x = random(this.bounds["x"].min, this.bounds["x"].max);
+    this.y = random(this.bounds["y"].min, this.bounds["y"].max);
+
+    // how large the orb is vs it's original radius (this will modulate over time)
+    this.scale = 1;
+
+    // what color is the orb?
+    this.fill = fill;
+
+    // the original radius of the orb, set relative to window height
+    this.radius = random(window.innerHeight / 6, window.innerHeight / 3);
+
+    // starting points in "time" for the noise/self similar random values
+    this.xOff = random(0, 1000);
+    this.yOff = random(0, 1000);
+    // how quickly the noise/self similar random values step through time
+    this.inc = 0.002;
+
+    // PIXI.Graphics is used to draw 2d primitives (in this case a circle) to the canvas
+    this.graphics = new PIXI.Graphics();
+    this.graphics.alpha = 0.825;
+
+    // 250ms after the last window resize event, recalculate orb positions.
+    window.addEventListener(
+      "resize",
+      debounce(() => {
+        this.bounds = this.setBounds();
+      }, 250)
+    );
+  }
+
+  setBounds() {
+    // how far from the { x, y } origin can each orb move
+    const maxDist =
+      window.innerWidth < 1000 ? window.innerWidth / 3 : window.innerWidth / 5;
+    // the { x, y } origin for each orb (the bottom right of the screen)
+    const originX = window.innerWidth / 1.25;
+    const originY =
+      window.innerWidth < 1000
+        ? window.innerHeight
+        : window.innerHeight / 1.375;
+
+    // allow each orb to move x distance away from it's x / y origin
+    return {
+      x: {
+        min: originX - maxDist,
+        max: originX + maxDist
+      },
+      y: {
+        min: originY - maxDist,
+        max: originY + maxDist
+      }
+    };
+  }
+
+  update() {
+    // self similar "psuedo-random" or noise values at a given point in "time"
+    const xNoise = simplex.noise2D(this.xOff, this.xOff);
+    const yNoise = simplex.noise2D(this.yOff, this.yOff);
+    const scaleNoise = simplex.noise2D(this.xOff, this.yOff);
+
+    // map the xNoise/yNoise values (between -1 and 1) to a point within the orb's bounds
+    this.x = map(xNoise, -1, 1, this.bounds["x"].min, this.bounds["x"].max);
+    this.y = map(yNoise, -1, 1, this.bounds["y"].min, this.bounds["y"].max);
+    // map scaleNoise (between -1 and 1) to a scale value somewhere between half of the orb's original size, and 100% of it's original size
+    this.scale = map(scaleNoise, -1, 1, 0.5, 1);
+
+    // step through "time"
+    this.xOff += this.inc;
+    this.yOff += this.inc;
+  }
+
+  render() {
+    // update the PIXI.Graphics position and scale values
+    this.graphics.x = this.x;
+    this.graphics.y = this.y;
+    this.graphics.scale.set(this.scale);
+
+    // clear anything currently drawn to graphics
+    this.graphics.clear();
+
+    // tell graphics to fill any shapes drawn after this with the orb's fill color
+    this.graphics.beginFill(this.fill);
+    // draw a circle at { 0, 0 } with it's size set by this.radius
+    this.graphics.drawCircle(0, 0, this.radius);
+    // let graphics know we won't be filling in any more shapes
+    this.graphics.endFill();
+  }
+}
+
+// Create PixiJS app
+const app = new PIXI.Application({
+  // render to <canvas class="orb-canvas"></canvas>
+  view: document.querySelector(".orb-canvas"),
+  // auto adjust size to fit the current window
+  resizeTo: window,
+  // transparent background, we will be creating a gradient background later using CSS
+  transparent: true
 });
-let backgroundColors = [ '#000', '#000' ];
-let colors = [
-  [ '#002aff', "#009ff2" ],
-  [ '#0054ff', '#27e49b' ], 
-  [ '#202bc5' ,'#873dcc' ]
-];
-let count = 70;
-let blur = [ 12, 70 ];
-let radius = [ 1, 120 ];
 
-ctx.clearRect( 0, 0, canvas.width, canvas.height );
-ctx.globalCompositeOperation = 'lighter';
+app.stage.filters = [new KawaseBlurFilter(30, 10, true)];
 
-let grd = ctx.createLinearGradient(0, canvas.height, canvas.width, 0);
-grd.addColorStop(0, backgroundColors[0]);
-grd.addColorStop(1, backgroundColors[1]);
-ctx.fillStyle = grd;
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Create colour palette
+const colorPalette = new ColorPalette();
 
-let items = [];
+// Create orbs
+const orbs = [];
 
-while(count--) {
-    let thisRadius = rand( radius[0], radius[1] );
-    let thisBlur = rand( blur[0], blur[1] );
-    let x = rand( -100, canvas.width + 100 );
-    let y = rand( -100, canvas.height + 100 );
-    let colorIndex = Math.floor(rand(0, 299) / 100);
-    let colorOne = colors[colorIndex][0];
-    let colorTwo = colors[colorIndex][1];
-    
-    ctx.beginPath();
-    ctx.filter = `blur(${thisBlur}px)`;
-    let grd = ctx.createLinearGradient(x - thisRadius / 2, y - thisRadius / 2, x + thisRadius, y + thisRadius);
-  
-    grd.addColorStop(0, colorOne);
-    grd.addColorStop(1, colorTwo);
-    ctx.fillStyle = grd;
-    ctx.fill();
-    ctx.arc( x, y, thisRadius, 0, Math.PI * 2 );
-    ctx.closePath();
-    
-    let directionX = Math.round(rand(-99, 99) / 100);
-    let directionY = Math.round(rand(-99, 99) / 100);
-  
-    items.push({
-      x: x,
-      y: y,
-      blur: thisBlur,
-      radius: thisRadius,
-      initialXDirection: directionX,
-      initialYDirection: directionY,
-      initialBlurDirection: directionX,
-      colorOne: colorOne,
-      colorTwo: colorTwo,
-      gradient: [ x - thisRadius / 2, y - thisRadius / 2, x + thisRadius, y + thisRadius ],
+for (let i = 0; i < 10; i++) {
+  const orb = new Orb(colorPalette.randomColor());
+
+  app.stage.addChild(orb.graphics);
+
+  orbs.push(orb);
+}
+
+// Animate!
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  app.ticker.add(() => {
+    orbs.forEach((orb) => {
+      orb.update();
+      orb.render();
     });
-}
-
-
-function changeCanvas(timestamp) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  let adjX = 2;
-  let adjY = 2;
-  let adjBlur = 1;
-  items.forEach(function(item) {
-    
-      if(item.x + (item.initialXDirection * adjX) >= canvas.width && item.initialXDirection !== 0 || item.x + (item.initialXDirection * adjX) <= 0 && item.initialXDirection !== 0) {
-        item.initialXDirection = item.initialXDirection * -1;
-      }
-      if(item.y + (item.initialYDirection * adjY) >= canvas.height && item.initialYDirection !== 0 || item.y + (item.initialYDirection * adjY) <= 0 && item.initialYDirection !== 0) {
-        item.initialYDirection = item.initialYDirection * -1;
-      }
-      
-      if(item.blur + (item.initialBlurDirection * adjBlur) >= radius[1] && item.initialBlurDirection !== 0 || item.blur + (item.initialBlurDirection * adjBlur) <= radius[0] && item.initialBlurDirection !== 0) {
-        item.initialBlurDirection *= -1;
-      }
-    
-      item.x += (item.initialXDirection * adjX);
-      item.y += (item.initialYDirection * adjY);
-      item.blur += (item.initialBlurDirection * adjBlur);
-      ctx.beginPath();
-      ctx.filter = `blur(${item.blur}px)`;
-      let grd = ctx.createLinearGradient(item.gradient[0], item.gradient[1], item.gradient[2], item.gradient[3]);
-      grd.addColorStop(0, item.colorOne);
-      grd.addColorStop(1, item.colorTwo);
-      ctx.fillStyle = grd;
-      ctx.arc( item.x, item.y, item.radius, 0, Math.PI * 2 );
-      ctx.fill();
-      ctx.closePath();
-    
   });
-  window.requestAnimationFrame(changeCanvas);
-  
+} else {
+  orbs.forEach((orb) => {
+    orb.update();
+    orb.render();
+  });
 }
 
-window.requestAnimationFrame(changeCanvas);
+document
+  .querySelector(".overlay__btn--colors")
+  .addEventListener("click", () => {
+    colorPalette.setColors();
+    colorPalette.setCustomProperties();
+
+    orbs.forEach((orb) => {
+      orb.fill = colorPalette.randomColor();
+    });
+  });
   </script>
 </html>
