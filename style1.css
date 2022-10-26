@@ -7,18 +7,18 @@ body {
 .button-container{
   display: flex;
   position: absolute;
-  top: 250px;
+  top: 60%;
   font-weight: bold;
   text-align: center;
   font-size: 30px;
 }
 a#one{
-  width = 50px;
+  width = 150px;
   height = 50px;
   background-color = red;
 }
 a#two{
-   width = 50px;
+   width = 150px;
   height = 50px;
   background-color = green;
 }
@@ -35,7 +35,7 @@ canvas {
 
 .overlay{
   position: absolute;
-  top: 150px;
+  top: 50%;
   font-weight: bold;
   text-align: center;
   font-size: 30px;
