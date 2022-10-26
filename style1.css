@@ -4,7 +4,7 @@ body {
   background: white;
   margin: 0;
 }
-button{
+.button-container{
  position: absolute;
   top: 250px;
   font-weight: bold;
