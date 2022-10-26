@@ -5,7 +5,11 @@ body {
   margin: 0;
 }
 button{
-   position: absolute;
+ position: absolute;
+  top: 250px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 30px;
 }
 .container{ 
   display: flex;
