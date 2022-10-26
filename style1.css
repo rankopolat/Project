@@ -18,8 +18,8 @@ a#one{
   background-color: red;
 }
 a#two{
-   width = 150px;
-  height = 50px;
+   width: 150px;
+  height: 50px;
   background-color: green;
 }
 .container{ 
