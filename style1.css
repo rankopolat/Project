@@ -11,3 +11,12 @@ canvas {
   display: block;
   position: relative;
 }
+
+.canvas .overlay {
+  position: absolute;
+  top: 80px;
+  right: 15px;
+  font-weight: bold;
+  text-align: right;
+  font-size: 30px;
+}
