@@ -8,6 +8,7 @@ body {
 
 .container{ 
   display: flex;
+  justify-content: center;
 }
 canvas {
   width: 100%;
