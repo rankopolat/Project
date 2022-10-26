@@ -12,12 +12,12 @@ body {
   text-align: center;
   font-size: 30px;
 }
-button#one{
+a#one{
   width = 50px;
   height = 50px;
   background-color = red;
 }
-button#one{
+a#two{
    width = 50px;
   height = 50px;
   background-color = green;
