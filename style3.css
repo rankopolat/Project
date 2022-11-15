@@ -1,38 +1,50 @@
+*{
+	margin:0;
+	padding:0;
+	outline:none;
+	box-sizing:border-box;
+	font-family:'Poppins', sans-serif;
+	
+}
+
 body{
-	background-image: linear-gradient(to right,violet, gold);
+	
+	height:100vh;
+	width:100%;
+	background-image: linear-gradient(115deg,violet, gold);
 	
 }
 .wrap{
 
-  height:100%;
-  width:100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+   position:absolute;
+   top:50%;
+   left:50%;
+   transform: translate(-50%,-50%);
 
 }
-
+.wrap{
+	
+	background-image: url("rain.jpg");
+	width:35%;
+	padding:30px;
+	height:55%;
+	box-shadow:0 0 8px
+	
+}
 .banner{
-  width: 40%;
-  height: 70%;
-  background-color:grey;
+
 }
 
 .inputs{
-	display: flex;
-	width:100%;
-	align-items: center;
-	justify-content: center;
-	height:10%;
-	background-color:red;
 	
+	text-align:center;
 }
 
 .wrapper{
-	background-color:blue;
-	width:100%;
-	height:100%;
+	
 	
 	
 }
+
+
 
